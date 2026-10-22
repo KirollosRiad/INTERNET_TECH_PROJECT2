@@ -1,25 +1,25 @@
  Part C – Questions 11–15
 
-11. Why is TC=1 in the first response?**
+11. Why is TC=1 in the first response?
 
 TC=1 means the response was too large, so some of the data was cut off.
 
-12. Which response has AA=1? Why are the others AA=0?**
+12. Which response has AA=1? Why are the others AA=0?
 
 The third response has AA=1 because it comes from the authoritative DNS server. The first two have AA=0 because they only direct the query to other servers.
 
-13. What is the type field in the first DNS query (hexadecimal)?**
+13. What is the type field in the first DNS query (hexadecimal)?
 
 0x0001, which means an A record (IPv4 address).
 
-14. What are the type fields in the first DNS response?**
+14. What are the type fields in the first DNS response?
 
 - Authority section: NS = 0x0002
 - Additional section: A = 0x0001 and AAAA = 0x001C
 
-15. What is the destination IP of the second DNS query (hexadecimal)? Where did it come from?**
+15. What is the destination IP of the second DNS query (hexadecimal)? Where did it come from?
 
 The IP is 192.31.80.30, or 0xC01F501E in hexadecimal. It came from the Additional Records section of the first DNS response.
 
-net id:mvo11
-partner net id:Kr996
+net id:mvo11 mary oconnor
+partner net id:Kr996 krillos
