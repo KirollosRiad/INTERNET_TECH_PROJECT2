@@ -1,0 +1,8 @@
+{"id": 53806, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 1, "answers": [{"type": 1, "ip": "128.6.13.2", "ttl": 3600}]}
+{"id": 42591, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 1, "answers": [{"type": 28, "ip": "2620:0:d60:ac0d::2", "ttl": 3600}]}
+{"id": 17905, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 0, "answers": []}
+{"id": 26156, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 3, "answers": [{"type": 5, "ip": null, "ttl": 1929}, {"type": 1, "ip": "104.18.4.101", "ttl": 300}, {"type": 1, "ip": "104.18.5.101", "ttl": 300}]}
+{"id": 23417, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 1, "answers": [{"type": 1, "ip": "128.6.13.2", "ttl": 3600}]}
+{"id": 43328, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 1, "answers": [{"type": 28, "ip": "2620:0:d60:ac0d::2", "ttl": 3600}]}
+{"id": 61377, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 0, "answers": []}
+{"id": 58154, "qr": 1, "opcode": 0, "aa": 0, "tc": 0, "rd": 1, "ra": 1, "rcode": 0, "qdcount": 1, "ancount": 3, "answers": [{"type": 5, "ip": null, "ttl": 3339}, {"type": 1, "ip": "104.18.5.101", "ttl": 300}, {"type": 1, "ip": "104.18.4.101", "ttl": 300}]}
