@@ -3,24 +3,24 @@ import struct
 import random
 import json
 
-# Example query spec as JSON
+
 dns_query_spec = {
     "id": random.randint(0, 65535),
-    "qr": 0,      # query
-    "opcode": 0,  # standard query
-    "rd": 1,      # recursion desired
+    "qr": 0,      
+    "opcode": 0,  
+    "rd": 0,      
     "questions": [
         {
             "qname": "ilab1.cs.rutgers.edu",
-            "qtype": 1,   # NS record
-            "qclass": 1   # IN
+            "qtype": 1,   
+            "qclass": 1   
         }
     ]
 }
 
 
 def build_query(query_spec):
-    # Header fields
+    
     ID = query_spec["id"]
     QR = query_spec["qr"] << 15
     OPCODE = query_spec["opcode"] << 11
@@ -34,13 +34,12 @@ def build_query(query_spec):
 
     header = struct.pack("!HHHHHH", ID, flags, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
 
-    # Question section
     question_bytes = b""
     for q in query_spec["questions"]:
         labels = q["qname"].split(".")
         for label in labels:
             question_bytes += struct.pack("B", len(label)) + label.encode()
-        question_bytes += b"\x00"  # end of qname
+        question_bytes += b"\x00"  
         question_bytes += struct.pack("!HH", q["qtype"], q["qclass"])
 
     return header + question_bytes
@@ -56,7 +55,7 @@ def parse_name(data, offset):
         if length == 0:
             offset += 1
             break
-        # pointer
+        
         if (length & 0xC0) == 0xC0:
             if not jumped:
                 original_offset = offset + 2
@@ -72,11 +71,29 @@ def parse_name(data, offset):
     else:
         return ".".join(labels), original_offset
 
-#your parse_rr from part2
 def parse_rr(data, offset):
-  record={}
-  ## your code from part 2
-  return record, offset
+    """Parse a single resource record and return record + new offset."""
+    name, offset = parse_name(data, offset)
+    atype, aclass, ttl, rdlength = struct.unpack("!HHIH", data[offset:offset+10])
+    offset += 10
+    rdata = data[offset:offset+rdlength]
+    offset += rdlength
+    record={"hostname": name,"ttl": ttl,"atype": atype,"rtype": atype,"ip": None,"nsname": None}
+
+    
+
+    if atype == 1 and rdlength == 4:
+        record["ip"] = socket.inet_ntoa(rdata)
+   
+    elif atype == 28 and rdlength == 16:
+        record["ip"] = socket.inet_ntop(socket.AF_INET6, rdata)
+
+    elif atype in (2, 5):
+        ns_name, _ = parse_name(data, offset - rdlength)
+        record["nsname"] = ns_name
+
+
+    return record,offset
 
 def parse_response(data):
     response = {}
@@ -96,24 +113,32 @@ def parse_response(data):
     response["arcount"] = ARCOUNT
 
     offset = 12
-    # Skip questions
+    
     for _ in range(QDCOUNT):
         while data[offset] != 0:
             offset += data[offset] + 1
         offset += 1
-        offset += 4  # qtype + qclass
+        offset += 4  
 
-    # Parse Answer RRs
+    
     answers = []
     for _ in range(ANCOUNT):
         rr, offset = parse_rr(data, offset)
         answers.append(rr)
     authorities=[]
-    # Parse Authority RRs (NS)
-    #Add code to parse NS records
+    
+
+    for _ in range(NSCOUNT):
+        rr, offset = parse_rr(data, offset)
+        authorities.append(rr)
+
     additionals=[]
-    # Parse Additional RRs (A, AAAA, etc.)
-    #Add code to Parse additonal records
+   
+
+    for _ in range(ARCOUNT):
+        rr, offset = parse_rr(data, offset)
+        additionals.append(rr)
+
     
     response["answers"] = answers
     response["authorities"] = authorities
@@ -140,15 +165,40 @@ def iterative_resolve(query_spec):
 
     while servers: 
         server_ip = servers.pop(0)
+        print("Contacting DNS server:", server_ip)
          
 
-           ## code main loop
-           #1. dns_query to server_ip
-           #2. check if response ['answers] has ip address, if so done , return ip addrees
-           #else check if additionals has ip address, if so servers=[new_server]
-           # If no glue ip address found, exit
-           #if not new_server:
-            #return {"error": "No glue found"}
+           
+        try:
+            response = dns_query(query_spec, (server_ip, 53))
+        except (socket.timeout, OSError) as e:
+            print("DNS query failed:", e)
+            continue
+
+        requested_type = query_spec["questions"][0]["qtype"]
+
+        for answer in response.get("answers", []):
+           if answer.get("atype") == requested_type:
+                return response
+
+        new_server = None
+
+        
+        
+        for record in response.get("additionals", []):
+            if record.get("atype") == 1 and record.get("ip"):
+                new_server = record.get("ip")
+                break
+
+
+
+        
+        if new_server:
+            servers = [new_server]
+        else:
+            return {"error": "No glue found"}
+
+    return {"error": "DNS resolution failed"}
 
 
 
