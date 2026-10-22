@@ -18,7 +18,6 @@ dns_query_spec = {
     ]
 }
 
-
 def build_query(query_spec):
     
     ID = query_spec["id"]
@@ -43,7 +42,6 @@ def build_query(query_spec):
         question_bytes += struct.pack("!HH", q["qtype"], q["qclass"])
 
     return header + question_bytes
-
 
 def parse_name(data, offset):
     labels = []
@@ -79,8 +77,6 @@ def parse_rr(data, offset):
     rdata = data[offset:offset+rdlength]
     offset += rdlength
     record={"hostname": name,"ttl": ttl,"atype": atype,"rtype": atype,"ip": None,"nsname": None}
-
-    
 
     if atype == 1 and rdlength == 4:
         record["ip"] = socket.inet_ntoa(rdata)
@@ -127,13 +123,11 @@ def parse_response(data):
         answers.append(rr)
     authorities=[]
     
-
     for _ in range(NSCOUNT):
         rr, offset = parse_rr(data, offset)
         authorities.append(rr)
 
     additionals=[]
-   
 
     for _ in range(ARCOUNT):
         rr, offset = parse_rr(data, offset)
@@ -147,7 +141,6 @@ def parse_response(data):
     return response
 
 
-
 def dns_query(query_spec, server=("1.1.1.1", 53)):
     query = build_query(query_spec)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -158,51 +151,39 @@ def dns_query(query_spec, server=("1.1.1.1", 53)):
     return parse_response(data)
 
 
-
 def iterative_resolve(query_spec):
-    servers = ["198.41.0.4"]#initialize with ip address of any root servers]
-    print ("roort servers",servers)
+    server_ip = "198.41.0.4"
 
-    while servers: 
-        server_ip = servers.pop(0)
+    while True:
         print("Contacting DNS server:", server_ip)
-         
 
+       
+      
+         
            
         try:
             response = dns_query(query_spec, (server_ip, 53))
         except (socket.timeout, OSError) as e:
             print("DNS query failed:", e)
-            continue
+            return {"error": "DNS query failed"}
 
         requested_type = query_spec["questions"][0]["qtype"]
 
         for answer in response.get("answers", []):
-           if answer.get("atype") == requested_type:
+            if answer.get("atype") == requested_type:
                 return response
 
-        new_server = None
+            new_server = None
 
-        
-        
         for record in response.get("additionals", []):
             if record.get("atype") == 1 and record.get("ip"):
-                new_server = record.get("ip")
+                new_server = record["ip"]
                 break
 
-
-
-        
         if new_server:
-            servers = [new_server]
+            server_ip = new_server
         else:
             return {"error": "No glue found"}
-
-    return {"error": "DNS resolution failed"}
-
-
-
-
 if __name__ == "__main__":
     response = iterative_resolve(dns_query_spec)
     
