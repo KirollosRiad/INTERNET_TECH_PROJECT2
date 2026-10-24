@@ -1,0 +1,69 @@
+1.What is the value of domain name found in the question section of the dns query?
+(Give the answer in the hexadecimal representation as observed in the wireshark)
+ilab1.cs.rutgers.edu: 05 69 6c 61 62 31 02 63 73 07 72 75 74 67 65 72 73 03 65 64 75 00
+whale.stanford.edu: 05 77 68 61 6c 65 08 73 74 61 6e 66 6f 72 64 03 65 64 75 00
+www.princeton.edu: 03 77 77 77 09 70 72 69 6e 63 65 74 6f 6e 03 65 64 75 00
+2. What is the value of domain name found in the answer section of dns response?
+Explain (Give the answer in the hexadecimal representation as observed in the
+wireshark)
+c0 0c
+3. What is the value of the rdlength field in the dns response message? (Give the
+answer in thehexadecimal representation as observed in the wireshark)
+For A records, IPv4: 00 04
+For AAAA records, IPv6: 00 10
+4. What is the value of the address received in the dns response message? (Give
+the answer in thehexadecimal representation as observed in the wireshark)
+ilab1 A -128.6.13.2- 80 06 0d 02
+ilab1 AAAA - 2620:0:d60:ac0d::2 26 20 00 00 0d 60 ac 0d 00 00 00 00 00 00 00 02
+princeton 104.18.4.101 68 12 04 65
+princeton 104.18.5.101 68 12 05 65
+5. Why is the ANCOUNT for www.princeton.edu 3, but only 2 IP addresses are
+returned?
+ANCOUNT counts total resource records in the answer section, not IP addresses,
+www.princeton.edu resolves through a CNAME alias chain. The response contains 1
+CNAME record, which has no IP address, followed by 2 A records for the target
+infrastructure totaling 3 resource records for 2 IPs.
+
+Part B -
+6. What is the value of QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT in the dns
+response message?(Give the answer in the hexadecimal representation as
+observed in the wireshark)
+QDCOUNT: 00 01
+ANCOUNT: 00 09
+NSCOUNT: 00 00
+ARCOUNT: 00 00
+
+7. What is the value of the rdlength field in the dns response message? (If multiple
+resource records are present mention rdlength in each resource record. Give the
+answer in the hexadecimal representation as observed in the wireshark)
+1.a1-158.akam.net full name: 1+6 + 1+4 + 1+3 + 1 = 17 00 11
+2.a7-65.akam.net 1+5 label + 2-byte pointer to akam.net 00 08
+3.a20-65.akam.net 1+6 + 2 00 09
+4.ns5.dnsmadeeasy.com full name: 1+3 + 1+11 + 1+3 + 1 = 21 00 15
+5.a6-64.akam.net 1+5 + 2 00 08
+6.a24-66.akam.net 1+6 + 2 00 09
+7.a3-67.akam.net 1+5 + 2 00 08
+8.ns7.dnsmadeeasy.com 1+3 + 2 00 06
+9.ns6.dnsmadeeasy.com 1+3 + 2 00 06
+8. What are the name server names received in the response? (If multiple resource
+records are present mention name server present in each resource record. Give the
+answer in the hexadecimal representation as observed in the wireshark)
+a1-158.akam.net: 06 61 31 2d 31 35 38 04 61 6b 61 6d 03 6e 65 74 00
+a7-65.akam.net: 05 61 37 2d 36 35 then 04 61 6b 61 6d 03 6e 65 74 00
+a20-65.akam.net: 06 61 32 30 2d 36 35 + the same akam.net suffix
+ns5.dnsmadeeasy.com: 03 6e 73 35 0b 64 6e 73 6d 61 64 65 65 61 73 79 03 63 6f 6d 00
+a6-64.akam.net: 05 61 36 2d 36 34 + suffix
+a24-66.akam.net: 06 61 32 34 2d 36 36 + suffix
+a3-67.akam.net: 05 61 33 2d 36 37 + suffix
+ns7.dnsmadeeasy.com: 03 6e 73 37 + suffix
+ns6.dnsmadeeasy.com: 03 6e 73 36 + suffix
+
+9. Why are the rdlength values of multiple NS records in the response not all the
+same?
+Because of variable host name lengths and compression names
+10. Why do the NS records appear in the Answer section rather than the Authority
+section?
+The NS records appear in the Answer section rather than the Authority section because
+the question asked for the NS records of princeton.edu, and the Answer section holds
+records that directly match the queried name and type. The Authority section is for records
+that point toward other servers
